@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flet: Run Project",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "main",           // O arquivo é o main.py
+            "cwd": "${workspaceFolder}/src", // O Python começa a ler de dentro da src
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
