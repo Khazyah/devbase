@@ -289,7 +289,7 @@ class DownloaderView(ft.Container):
         """Cancela o download em andamento"""
         self.cancel_flag[0] = True
         self.cancel_button.disabled = True
-        self.status_message.value = "Cancelando..."
+        self.status_message.value = "Canceling..."
         self.status_message.color = ft.colors.ORANGE_400
         self.update()
 
