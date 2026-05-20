@@ -16,9 +16,9 @@ class SideBar(ft.Container):
         self.nav_buttons = [
             self.create_nav_button(ft.Icons.HOME, "Home", "home"),
             self.create_nav_button(ft.Icons.TASK_ALT, "Tasks", "tasks"),
-            self.create_nav_button(ft.Icons.DOWNLOAD, "Downloader", "media_downloader"),
+            self.create_nav_button(ft.Icons.CALCULATE, "Calculate", "calculate"),
             self.create_nav_button(ft.Icons.SYNC, "Converter", "converter"),
-            self.create_nav_button(ft.Icons.CALCULATE, "Calculate", "calculate")
+            self.create_nav_button(ft.Icons.DOWNLOAD, "Downloader", "media_downloader"),
         ]
         self.settigs_buttons = [
             self.create_nav_button(ft.Icons.PERSON, "Accounts", "none"),
@@ -53,6 +53,7 @@ class SideBar(ft.Container):
         )
 
     def reload_current_view(self):
+        """Recarregar a cena atual."""
         import importlib
         import views.downloader_view 
         importlib.reload(views.downloader_view) # Recarrega o arquivo Python em tempo de execução
@@ -61,6 +62,7 @@ class SideBar(ft.Container):
         self.main_page.update()
         
     def create_nav_button(self, icon, text, scene_key):
+        """Criação de botões para a barra lateral."""
         return ft.TextButton(
             width=40, # Começa encolhido
             content=ft.Container(
@@ -72,6 +74,7 @@ class SideBar(ft.Container):
         )
 
     def toggle(self, e):
+        """Animação de barra lateral."""
         is_expanding = self.width == 58
         self.width = 160 if is_expanding else 58
 

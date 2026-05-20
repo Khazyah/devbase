@@ -8,6 +8,8 @@ class HomeView(ft.Container):
     def __init__(self, manager):
         super().__init__()
         self.manager = manager
+        # LISTA PARA RASTREAR OS CARDS DA TELA
+        self.cards: List[ft.Container] = []
 
         self.header_container = ft.Container(
             content=ft.Column(
@@ -29,7 +31,6 @@ class HomeView(ft.Container):
             expand=0,
             alignment=ft.alignment.center_left,
             padding=ft.padding.only(left=50, top=50)
-            #bgcolor="red"
         )
 
         self.center_container = ft.Container(
@@ -52,7 +53,7 @@ class HomeView(ft.Container):
                 ], 
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER
-            ), expand=1, #bgcolor="green"
+            ), expand=1,
         )
 
         self.content = ft.Column(
@@ -63,16 +64,20 @@ class HomeView(ft.Container):
             ]
         )
 
+    def reset_state(self):
+        """Resetar a home para voltar ao padrão e tirar as animações presas."""
+        for card in self.cards:
+            card.scale = 1.0
+            card.offset = ft.Offset(0, 0)
+            card.shadow = None
+
     def hover_animation(self, e):
-        # e.data == "true" quando o mouse entra, "false" quando sai
+        """Animação do hover dos containers (usados como botões)"""
         is_hover = e.data == "true"
         
         e.control.scale = 1.05 if is_hover else 1.0
-        
-        # Correção do Offset: use (0, 0) em vez de None para voltar ao normal
         e.control.offset = ft.Offset(0, -0.05) if is_hover else ft.Offset(0, 0)
         
-        # Sombra: blur_radius maior dá mais profundidade
         e.control.shadow = ft.BoxShadow(
             blur_radius=20, 
             spread_radius=1, 
@@ -82,9 +87,13 @@ class HomeView(ft.Container):
         e.control.update()
 
     def create_device_card(self, name, label, icon):
+        """Criação de container em forma de botão."""
+        # Proteção contra chaves que ainda não existem no cache
         name_converter = {
+            "Tasks": "tasks",
             "Converter": "converter",
             "Video Download": "media_downloader",
+            "Calculate": "calculate"
         }
 
         icon_container = ft.Container(
@@ -104,7 +113,7 @@ class HomeView(ft.Container):
                         padding=ft.padding.only(left=12)
                     )
                 ], spacing=0, 
-            ), expand=True, #bgcolor="green"
+            ), expand=True,
         )
 
         device_card_container = ft.Container(
@@ -127,13 +136,14 @@ class HomeView(ft.Container):
             ink=True, 
             on_hover=self.hover_animation,
             
-            # --- AJUSTES DE ANIMAÇÃO ---
             scale=1.0,
-            offset=ft.Offset(0, 0), # OBRIGATÓRIO ter valor inicial para animar
+            offset=ft.Offset(0, 0), 
             animate_scale=ft.animation.Animation(300, ft.AnimationCurve.DECELERATE),
             animate_offset=ft.animation.Animation(300, ft.AnimationCurve.DECELERATE),
 
-            on_click=lambda _: self.manager.change_view(name_converter[name]),
+            on_click=lambda _: self.manager.change_view(name_converter[name]) if name in name_converter else None,
         )
 
+        # Adiciona o card na lista de rastreio antes de retomar.
+        self.cards.append(device_card_container)
         return device_card_container
