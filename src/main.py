@@ -3,33 +3,33 @@ import time
 from sys import path as syspath
 from os import path
 
-# Ajuste de path para reconhecer a pasta src
+# Add parent directory to path to recognize the src folder
 syspath.append(path.abspath(path.join(path.dirname(__file__), '..')))
 
 from ui.components.sidebar import SideBar
 from ui.components.manager import LayoutManager
 
 def main(page: ft.Page):
-    # 1. Configurações de Janela
+    # 1. Window Configuration
     page.window.width = 800
     page.window.height = 600
     page.window.resizable = False
-    page.window.visible = False # Esconde para evitar o "flash" de redimensionamento
+    page.window.visible = False  # Hide to prevent resize "flash" effect
     
     page.padding = 0
     page.spacing = 0
     page.bgcolor = "#202020"
 
-    # 2. Container Principal (Ele será ÚNICO e usado pelo Manager)
-    # Criamos ele com o estilo final (cor, bordas) desde o início
+    # 2. Main Container (Will be UNIQUE and managed by LayoutManager)
+    # Create with final styling (color, borders) from the start
     main_content = ft.Container(
         expand=True,
-        bgcolor="#973838", # Cor de fundo padrão
+        bgcolor="#973838",  # Default background color
         border_radius=ft.BorderRadius(top_left=20, top_right=0, bottom_left=0, bottom_right=0),
         alignment=ft.alignment.center
     )
 
-    # 3. Tela de Loading
+    # 3. Loading Screen
     loading_screen = ft.Column(
         [
             ft.Text("Loading DevTools...", size=20, color="white"),
@@ -40,7 +40,7 @@ def main(page: ft.Page):
         expand=True
     )
 
-    # Definimos o loading como conteúdo inicial e mostramos a página
+    # Set loading screen as initial content and show the page
     main_content.content = loading_screen
     page.add(main_content)
     
@@ -49,16 +49,14 @@ def main(page: ft.Page):
     page.window.visible = True
     page.update()
 
-    # 4. Inicialização do Manager (Aqui ele faz o cache das views)
-    # Isso leva um tempinho, por isso o loading está na tela
+    # 4. Initialize LayoutManager (Caches all views here)
     manager = LayoutManager(content_container=main_content, page=page)
-    time.sleep(1) # Um tempinho de espera. 
+    time.sleep(1)  # Brief initialization delay
     
-    # 5. Montagem do Layout Final
-    # Agora que o manager carregou, criamos a Sidebar
+    # 5. Assemble Final Layout
     sidebar = SideBar(page, on_change_scene=manager.change_view)
     
-    # Limpamos a página para colocar a Row definitiva (Sidebar + MainContent)
+    # Clean page and add final Row layout (Sidebar + MainContent)
     page.clean()
     page.add(
         ft.Row(
@@ -71,8 +69,7 @@ def main(page: ft.Page):
         )
     )
 
-    # 6. Carregamos a Home
-    # O change_view vai substituir o loading pelo conteúdo da Home dentro do main_content
+    # 6. Load Home View
     manager.change_view("home")
     page.update()
 

@@ -11,18 +11,18 @@ def download_video(
     cancel_flag: Optional[list] = None
 ) -> dict:
     """
-    Realiza o download utilizando yt-dlp com base nas escolhas da UI.
+    Download media using yt-dlp based on UI choices.
     
     Args:
-        url: URL do vídeo
-        save_path: Caminho para salvar o arquivo
-        quality: Qualidade desejada (ex: "1080p", "720p")
-        file_format: Formato do arquivo (mp4, mp3, wav)
-        progress_callback: Função callback para atualizar progresso (recebe dict com status)
-        cancel_flag: Lista com flag [False] para cancelar (modify para [True])
+        url: Media URL
+        save_path: Path to save the file
+        quality: Desired quality (e.g., "1080p", "720p")
+        file_format: File format (mp4, mp3, wav)
+        progress_callback: Callback function for progress updates (receives dict with status)
+        cancel_flag: List with flag [False] to cancel (modify to [True])
     
     Returns:
-        dict com status: {"success": bool, "message": str, "filename": str or None}
+        dict with status: {"success": bool, "message": str, "filename": str or None}
     """
     
     if not url or not url.strip():
@@ -31,11 +31,11 @@ def download_video(
     if not os.path.isdir(save_path):
         return {"success": False, "message": f"Invalid Path: {save_path}"}
     
-    #height = quality.replace("p", "")
+    # Extract height value from quality string
     height = "".join(filter(str.isdigit, quality))
     
     def progress_hook(d):
-        """Hook chamado pelo yt-dlp durante o download"""
+        """Hook called by yt-dlp during download."""
         if cancel_flag and cancel_flag[0]:
             raise Exception("Download Canceled!")
         
@@ -60,7 +60,7 @@ def download_video(
                     'total': total,
                     'speed': speed,
                     'eta': eta,
-                    'filename': d.get('filename', 'Arquivo desconhecido')
+                    'filename': d.get('filename', 'Unknown file')
                 })
         
         elif d['status'] == 'finished':
@@ -75,7 +75,7 @@ def download_video(
             if progress_callback:
                 progress_callback({
                     'status': 'error',
-                    'message': 'Erro no download'
+                    'message': 'Download error occurred'
                 })
     
     ydl_opts = {
@@ -91,7 +91,7 @@ def download_video(
         ydl_opts['postprocessors'] = [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': file_format,
-            'preferredquality': height #'192' if file_format == "wav" else '320',
+            'preferredquality': height
         }]
 
     try:
@@ -108,6 +108,6 @@ def download_video(
         error_msg = str(e)
         return {
             "success": False,
-            "message": f"Donwload Error: {error_msg}",
+            "message": f"Download Error: {error_msg}",
             "filename": None
         }

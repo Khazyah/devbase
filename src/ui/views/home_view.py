@@ -8,7 +8,7 @@ class HomeView(ft.Container):
     def __init__(self, manager):
         super().__init__()
         self.manager = manager
-        # LISTA PARA RASTREAR OS CARDS DA TELA
+        # List to track home page cards for animation cleanup
         self.cards: List[ft.Container] = []
 
         self.header_container = ft.Container(
@@ -21,7 +21,7 @@ class HomeView(ft.Container):
                         size=36
                     ),
                     ft.Text(
-                        value="A aplication that help you to improve your time, and eficience.",
+                        value="A aplication that help you to improve your time and eficience.",
                         color="#D3D2D2",
                         font_family="Cascadia Code",
                         size=12
@@ -65,14 +65,14 @@ class HomeView(ft.Container):
         )
 
     def reset_state(self):
-        """Resetar a home para voltar ao padrão e tirar as animações presas."""
+        """Reset home view to default state and clear any stuck animations."""
         for card in self.cards:
             card.scale = 1.0
             card.offset = ft.Offset(0, 0)
             card.shadow = None
 
     def hover_animation(self, e):
-        """Animação do hover dos containers (usados como botões)"""
+        """Handle card hover animations for button containers."""
         is_hover = e.data == "true"
         
         e.control.scale = 1.05 if is_hover else 1.0
@@ -87,8 +87,8 @@ class HomeView(ft.Container):
         e.control.update()
 
     def create_device_card(self, name, label, icon):
-        """Criação de container em forma de botão."""
-        # Proteção contra chaves que ainda não existem no cache
+        """Create container button cards for the home view."""
+        # Protection against keys that don't exist in the cache yet
         name_converter = {
             "Tasks": "tasks",
             "Converter": "converter",
@@ -144,6 +144,6 @@ class HomeView(ft.Container):
             on_click=lambda _: self.manager.change_view(name_converter[name]) if name in name_converter else None,
         )
 
-        # Adiciona o card na lista de rastreio antes de retomar.
+        # Add card to tracking list before returning
         self.cards.append(device_card_container)
         return device_card_container

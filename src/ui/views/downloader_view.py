@@ -7,14 +7,12 @@ from modules.downloader.engine import download_video
 class DownloaderView(ft.Container):
     def __init__(self, manager):
         super().__init__()
-        self.lbl_path = ft.Text("Nenhuma pasta selecionada", italic=True)
+        self.lbl_path = ft.Text("No folders selected!", italic=True)
         self.manager = manager
         self.expand = True
         self.download_thread = None
         self.cancel_flag = [False]
-        
-        # --- Atributos dos Widgets ---
-        
+                
         self.header_text = ft.Text(
             value="Media Downloader",
             size=42,
@@ -43,7 +41,7 @@ class DownloaderView(ft.Container):
         )
 
         self.cancel_button = ft.Button(
-            text="Cancelar",
+            text="Cancel",
             bgcolor="#C41C3B",
             height=45,
             width=120,
@@ -202,27 +200,31 @@ class DownloaderView(ft.Container):
     # @ --- Métodos de Lógica ---
 
     def format_on_change(self, e):
+        """Alterar o dropdown para cada formato."""
         file_quality = self.file_audio_quality if e.control.value in ["wav", "mp3"] else self.file_video_quality
         self.file_quality_dropdown.options = [ft.dropdown.Option(q) for q in file_quality]
         self.file_quality_dropdown.value = file_quality[0]
         self.file_quality_dropdown.update()
 
     def validate_fields(self):
+        """Validar o field verificando a url e o arquivo selecionado."""
         url = self.url_input.value or ""
         path = self.lbl_path.value or ""
 
-        if url.strip() != "" and "Nenhuma pasta" not in path:
+        if url.strip() != "" and "No Folder" not in path:
             self.download_button.disabled = False
         else:
             self.download_button.disabled = True
         self.update()
 
     def open_file_picker(self, e):
+        """Abrir a pasta do picker."""
         self.manager.open_dir_picker(self.on_path_result)
 
     def on_path_result(self, path):
+        """Verificando o caminho e alterando os valores de acordo."""
         if path:
-            self.lbl_path.value = f"Caminho: {path}"
+            self.lbl_path.value = f"Path: {path}"
             self.lbl_path.color = ft.colors.BLUE_200
             self.validate_fields()
         self.update()
@@ -245,7 +247,7 @@ class DownloaderView(ft.Container):
             total = data.get('total', 0)
             speed = data.get('speed', 0)
             
-            # Formatar bytes para MB/GB
+            # ? Bytes to MB/GB
             def format_bytes(bytes_val):
                 for unit in ['B', 'KB', 'MB', 'GB']:
                     if bytes_val < 1024:
@@ -253,7 +255,7 @@ class DownloaderView(ft.Container):
                     bytes_val /= 1024
                 return f"{bytes_val:.1f}TB"
             
-            # Formatar velocidade
+            # ? Progress
             def format_speed(speed_val):
                 if speed_val is None:
                     return "Calculating..."
@@ -273,7 +275,7 @@ class DownloaderView(ft.Container):
         self.update()
 
     def reset_ui(self):
-        """Reseta a UI após download"""
+        """Reset the UI after the download."""
         self.download_button.visible = True
         self.cancel_button.visible = False
         self.progress_container.visible = False
@@ -286,7 +288,7 @@ class DownloaderView(ft.Container):
         self.update()
 
     def handle_cancel(self, e):
-        """Cancela o download em andamento"""
+        """Cancel the download."""
         self.cancel_flag[0] = True
         self.cancel_button.disabled = True
         self.status_message.value = "Canceling..."
@@ -294,10 +296,11 @@ class DownloaderView(ft.Container):
         self.update()
 
     def handle_download(self, e):
+        """Lógica de donwload da media."""
         url = self.url_input.value.strip() if self.url_input.value else ""
         current_path = self.lbl_path.value or ""
 
-        # Validações
+        # ? Validation.
         if not url:
             self.status_message.value = "❌ URL is needed!"
             self.status_message.color = ft.colors.RED_400
@@ -305,7 +308,7 @@ class DownloaderView(ft.Container):
             self.update()
             return
 
-        if "Nenhuma pasta" in current_path or not current_path:
+        if "No Folder" in current_path or not current_path:
             self.status_message.value = "❌ Select a folder for download!"
             self.status_message.color = ft.colors.RED_400
             self.status_message.visible = True
@@ -316,7 +319,7 @@ class DownloaderView(ft.Container):
         quality = self.file_quality_dropdown.value
         fmt = self.file_format_dropdown.value
 
-        # Mostrar progress
+        # ? Show Progress.
         self.download_button.visible = False
         self.cancel_button.visible = True
         self.progress_container.visible = True
@@ -328,7 +331,7 @@ class DownloaderView(ft.Container):
         self.progress_text.value = "Starting..."
         self.update()
 
-        # Executar em thread separada para não bloquear UI
+        # ? Executar em thread separada para não bloquear UI
         self.download_thread = threading.Thread(
             target=self._download_worker,
             args=(url, save_path, quality, fmt),
@@ -348,10 +351,10 @@ class DownloaderView(ft.Container):
                 cancel_flag=self.cancel_flag
             )
 
-            # Aguardar um pouco para UI atualizar
+            # ? Time for the UI update.
             time.sleep(0.5)
 
-            # Mostrar resultado
+            # ? Show Results.
             if result['success']:
                 self.status_message.value = f"✅ {result['message']}"
                 self.status_message.color = ft.colors.GREEN_400
@@ -361,7 +364,7 @@ class DownloaderView(ft.Container):
 
             self.status_message.visible = True
             
-            # Resetar após 2 segundos
+            # ? Reset after 3 secs.
             threading.Timer(3.0, self.reset_ui).start()
 
         except Exception as err:

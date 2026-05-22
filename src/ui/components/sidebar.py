@@ -4,7 +4,7 @@ class SideBar(ft.Container):
     def __init__(self, page_reference: ft.Page, on_change_scene):
         super().__init__()
         self.main_page = page_reference
-        self.on_change_scene = on_change_scene # Callback para trocar de cena
+        self.on_change_scene = on_change_scene  # Callback for scene changes
         
         self.width = 58
         self.bgcolor = "#202020"
@@ -12,7 +12,7 @@ class SideBar(ft.Container):
         self.clip_behavior = ft.ClipBehavior.HARD_EDGE
         self.padding = ft.padding.only(left=10, top=20)
         
-        # Lista privada de botões para facilitar o toggle
+        # ? Navigation button list for easy toggle
         self.nav_buttons = [
             self.create_nav_button(ft.Icons.HOME, "Home", "home"),
             self.create_nav_button(ft.Icons.TASK_ALT, "Tasks", "tasks"),
@@ -53,18 +53,18 @@ class SideBar(ft.Container):
         )
 
     def reload_current_view(self):
-        """Recarregar a cena atual."""
+        """Reload the current view in real-time."""
         import importlib
         import views.downloader_view 
-        importlib.reload(views.downloader_view) # Recarrega o arquivo Python em tempo de execução
+        importlib.reload(views.downloader_view)  # Reloads the Python file at runtime
 
         self.update()
         self.main_page.update()
         
     def create_nav_button(self, icon, text, scene_key):
-        """Criação de botões para a barra lateral."""
+        """Create navigation buttons for the sidebar."""
         return ft.TextButton(
-            width=40, # Começa encolhido
+            width=40,  # Starts collapsed
             content=ft.Container(
                 content=ft.Row([ft.Icon(icon, color="white"), ft.Text(text, color="white")], spacing=20),
                 width=160,
@@ -74,7 +74,7 @@ class SideBar(ft.Container):
         )
 
     def toggle(self, e):
-        """Animação de barra lateral."""
+        """Sidebar expand/collapse animation."""
         is_expanding = self.width == 58
         self.width = 160 if is_expanding else 58
 
