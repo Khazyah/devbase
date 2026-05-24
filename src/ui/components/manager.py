@@ -17,14 +17,14 @@ class LayoutManager:
     def _init_views(self):
         """Initialize and cache all application views."""
         from ui.views.downloader_view import DownloaderView
-        from ui.views.converter_view import ConverterView
+        from ui.views.converter_view import ConverterImageView
         from ui.views.canculate_view import CalculateView
         from ui.views.tasks_view import TaskView
         from ui.views.home_view import HomeView
 
         self.views_cache = {
             "home": HomeView(self),
-            "converter": ConverterView(),
+            "converter": ConverterImageView(self),
             "media_downloader": DownloaderView(self),
             "tasks": TaskView(self),
             "calculate": CalculateView(self)

@@ -2,68 +2,72 @@ import flet as ft
 from typing import Any
 from modules.converter.engine import convert_image
 
-def ConverterView():
-    selected_files_text = ft.Text("No file selected")
-    result_text = ft.Text()
-    
-    # ? Store file path in a simple variable for easy access
-    file_path = ""
+class ConverterImageView(ft.Container):
+    def __init__(self, manager):
+        super().__init__()
+        self.manager = manager
 
-    format_dropdown = ft.Dropdown(
-        label="Convert to:",
-        width=200,
-        options=[
-            ft.dropdown.Option("PNG"),
-            ft.dropdown.Option("JPEG"),
-            ft.dropdown.Option("WEBP"),
-            ft.dropdown.Option("ICO"),
-        ],
-        value="PNG"
-    )
+        format_dropdown = ft.Dropdown(
+            label="Convert to:",
+            width=200,
+            options=[
+                ft.dropdown.Option("PNG"),
+                ft.dropdown.Option("JPEG"),
+                ft.dropdown.Option("WEBP"),
+                ft.dropdown.Option("ICO"),
+            ],
+            value="PNG"
+        )
 
-    # ? Use on_result to get the correct local file path
-    def on_file_result(e: Any):
-        nonlocal file_path
-        if e.files:
-            file_path = e.files[0].path
-            selected_files_text.value = f"Selected: {e.files[0].name}"
-            selected_files_text.update()
+        self.select_image = ft.Container(
+            content=ft.Text(value="Select a Image"),
+            bgcolor="#3A3A3A",
+            height=500,
+            width=500,
+            alignment=ft.alignment.center,
+            margin=ft.margin.only(left=15),
+            border_radius=16
+            #padding=ft.padding.only(left=100)
+            #expand=True
+        )
 
-    file_picker = ft.FilePicker(on_result=on_file_result)
+        self.info_container = ft.Container(
+            content=ft.Column(
+                controls=[
+                    ft.Text(value="Name: Background_Img1"),
+                    ft.Text(value="Format: .png"),
+                    ft.Text(value="Date: 13/12"),
+                ]
+            ), expand=True, bgcolor="green"
+        )
 
-    def handle_convert(e):
-        # ? Ensure the value is not None with a fallback ("PNG")
-        target_format = format_dropdown.value if format_dropdown.value else "PNG"
-        
-        if not file_path:
-            result_text.value = "Select a file first!"
-            result_text.color = "red"
-        else:
-            result_text.value = "Converting..."
-            result_text.update()
-            
-            res = convert_image(file_path, target_format)
-            result_text.value = res
-            result_text.color = "green" if "Success" in res else "red"
-        
-        e.page.update()
+        converter_buttons = ft.Row(
+            controls=[
+                ft.Button(text="T"),
+                ft.Button(text="V"),
+                format_dropdown
+            ]
+        )
 
-    header_text = ft.Text("Image Converter", size=25)
-    select_image_button_row = ft.Row(
-        controls=[
-            ft.Button("Select Image", icon=ft.Icons.IMAGE_SEARCH, on_click=lambda _: file_picker.pick_files()),
-            format_dropdown
-        ]
-    )
-    converter_button_row = ft.Row(
-        controls=[
-            ft.Button("Convert Now", on_click=handle_convert, bgcolor="blue", color="white"),
-            result_text
-        ]
-    )
+        self.converter_container = ft.Container(
+            content=ft.Column(
+                controls=[
+                    ft.TextField(),
+                    converter_buttons
+                ]
+            ), expand=True, bgcolor="red"
+        )
 
-    final_layout = ft.Column(
-        controls=[header_text, select_image_button_row, converter_button_row]
-    )
+        column_content = ft.Column(
+            controls=[
+                self.info_container,
+                self.converter_container
+            ]
+        )
 
-    return final_layout
+        self.content = ft.Row(
+            controls=[
+                self.select_image,
+                column_content
+            ], expand=True
+        )
