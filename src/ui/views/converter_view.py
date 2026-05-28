@@ -7,67 +7,52 @@ class ConverterImageView(ft.Container):
         super().__init__()
         self.manager = manager
 
+        # @ Left Widgets Containers
+        header_text = ft.Text(
+            size=42,
+            italic=True,
+            value="Image Converter",
+            font_family="Cascadia Code",
+        )
+
+        select_file_contaier = ft.Container(
+            content=None,
+            bgcolor="green",
+            expand=True,
+            width=300,
+            height=300,
+        )
+
+        # @ Dropdowns
+        formats = ["PNG", "JPEG", "WEBP", "ICO"]
         format_dropdown = ft.Dropdown(
             label="Convert to:",
             width=200,
-            options=[
-                ft.dropdown.Option("PNG"),
-                ft.dropdown.Option("JPEG"),
-                ft.dropdown.Option("WEBP"),
-                ft.dropdown.Option("ICO"),
-            ],
+            options=[ft.dropdown.Option(q) for q in formats],
             value="PNG"
         )
 
-        self.select_image = ft.Container(
-            content=ft.Text(value="Select a Image"),
-            bgcolor="#3A3A3A",
-            height=500,
-            width=500,
-            alignment=ft.alignment.center,
-            margin=ft.margin.only(left=15),
-            border_radius=16
-            #padding=ft.padding.only(left=100)
-            #expand=True
-        )
-
-        self.info_container = ft.Container(
+        # @ Containers
+        left_conteiner = ft.Container(
             content=ft.Column(
                 controls=[
-                    ft.Text(value="Name: Background_Img1"),
-                    ft.Text(value="Format: .png"),
-                    ft.Text(value="Date: 13/12"),
-                ]
-            ), expand=True, bgcolor="green"
+                    header_text,
+                    select_file_contaier
+                ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.STRETCH
+            ),
+            bgcolor="blue",
+            expand=2
         )
 
-        converter_buttons = ft.Row(
-            controls=[
-                ft.Button(text="T"),
-                ft.Button(text="V"),
-                format_dropdown
-            ]
-        )
-
-        self.converter_container = ft.Container(
-            content=ft.Column(
-                controls=[
-                    ft.TextField(),
-                    converter_buttons
-                ]
-            ), expand=True, bgcolor="red"
-        )
-
-        column_content = ft.Column(
-            controls=[
-                self.info_container,
-                self.converter_container
-            ]
+        right_container = ft.Container(
+            content=None,
+            bgcolor="red",
+            expand=1
         )
 
         self.content = ft.Row(
             controls=[
-                self.select_image,
-                column_content
-            ], expand=True
+                left_conteiner,
+                right_container
+            ], spacing=0
         )
